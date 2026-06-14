@@ -1,0 +1,109 @@
+"""
+Main Entry Point
+AI-Powered Student Course Allocation System
+FastAPI Application
+"""
+import pathlib
+from dotenv import load_dotenv
+
+# Load .env before anything else
+load_dotenv(pathlib.Path(__file__).parent / '.env')
+
+from contextlib import asynccontextmanager
+from datetime import datetime, timezone, timedelta
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.encoders import ENCODERS_BY_TYPE
+
+# =============================================
+# IST Datetime Serialization
+# =============================================
+_IST = timezone(timedelta(hours=5, minutes=30))
+
+
+def _dt_to_ist(dt: datetime) -> str:
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(_IST).isoformat()
+
+
+ENCODERS_BY_TYPE[datetime] = _dt_to_ist
+
+# =============================================
+# Import App Modules (after env load)
+# =============================================
+from models import init_tables
+from routes import router
+
+
+# =============================================
+# Lifespan
+# =============================================
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_tables()
+    yield
+
+
+# =============================================
+# Application
+# =============================================
+app = FastAPI(
+    title="CourseFlow AI",
+    description=(
+        "CourseFlow AI — Intelligent Student Course Allocation & Analytics System.\n\n"
+        "**Features:**\n"
+        "- Student registration with auto-generated student IDs\n"
+        "- Course management with category-wise seat reservations\n"
+        "- Automated allocation using merit + reservation rules\n"
+        "- Dashboard analytics (course stats, category-wise, available seats)\n"
+        "- Gemini AI assistant for natural language queries\n"
+    ),
+    version="1.0.0",
+    contact={"name": "CourseFlow AI"},
+    license_info={"name": "MIT"},
+    lifespan=lifespan,
+)
+
+# =============================================
+# CORS Middleware
+# =============================================
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],          # Restrict in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# =============================================
+# Root
+# =============================================
+@app.get("/", tags=["Service Info"])
+def root():
+    return {
+        "service": "CourseFlow AI",
+        "version": "1.0.0",
+        "status": "running",
+        "docs": "/docs",
+        "redoc": "/redoc",
+        "timestamp": datetime.now(timezone.utc),
+    }
+
+
+# =============================================
+# Health Check
+# =============================================
+@app.get("/health", tags=["Health"])
+def health():
+    return {
+        "status": "healthy",
+        "service": "CourseFlow AI",
+        "timestamp": datetime.now(timezone.utc),
+    }
+
+
+# =============================================
+# Include All Routes
+# =============================================
+app.include_router(router)

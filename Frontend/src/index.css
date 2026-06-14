@@ -1,0 +1,190 @@
+/* ── Google Fonts ─────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@import "tailwindcss";
+
+/* ── Root Variables ───────────────────────────────────── */
+:root {
+  --sidebar-w: 260px;
+  --sidebar-w-collapsed: 68px;
+  --topbar-h: 60px;
+  font-family: 'Inter', system-ui, sans-serif;
+
+  /* Premium light palette tokens */
+  --color-bg:          #f0f4ff;
+  --color-surface:     #ffffff;
+  --color-border:      #e8edf5;
+  --color-border-soft: #f0f4ff;
+  --color-primary:     #5b5ef6;
+  --color-primary-lt:  #eef0ff;
+  --color-text:        #0f172a;
+  --color-muted:       #6b7280;
+  --color-muted-lt:    #94a3b8;
+}
+
+/* ── Base ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+#root { height: 100vh; }
+
+/* ── Scrollbar ────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c7d2e8; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #a5b4cb; }
+
+/* ── Animations ───────────────────────────────────────── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes pulse-ring {
+  0%   { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.animate-fade-up { animation: fade-up 0.35s ease both; }
+.animate-shimmer {
+  background: linear-gradient(90deg, #eef2ff 25%, #e5eaff 50%, #eef2ff 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite;
+}
+.animate-toast-in { animation: toast-in 0.28s cubic-bezier(0.34, 1.4, 0.64, 1) both; }
+
+/* ── Glass card ───────────────────────────────────────── */
+.glass {
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+}
+
+/* ── Gradient text ────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #5b5ef6, #7c3aed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Sidebar ──────────────────────────────────────────── */
+/* Premium light-themed sidebar — deep indigo gradient */
+.sidebar-bg {
+  background: linear-gradient(180deg, #1e1b4b 0%, #2d2a6b 40%, #1e1b4b 100%);
+}
+
+/* ── Premium button shine ─────────────────────────────── */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+.btn-shine::after {
+  content: '';
+  position: absolute;
+  top: -50%; left: -75%;
+  width: 50%; height: 200%;
+  background: rgba(255, 255, 255, 0.18);
+  transform: skewX(-20deg);
+  transition: left 0.45s ease;
+}
+.btn-shine:hover::after { left: 130%; }
+
+/* ── Table row hover ──────────────────────────────────── */
+.table-row-hover { transition: background 0.12s ease; }
+.table-row-hover:hover {
+  background: linear-gradient(90deg, rgba(91, 94, 246, 0.025), rgba(124, 58, 237, 0.025));
+}
+/* Keep action buttons always tinted on row hover */
+.table-row-hover:hover .tbl-action-btn { color: #94a3b8; }
+
+/* ── Gradient backgrounds ─────────────────────────────── */
+/* Light-premium versions — softer, more airy */
+.grad-indigo  { background: linear-gradient(135deg, #5b5ef6 0%, #7c3aed 100%); }
+.grad-violet  { background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%); }
+.grad-emerald { background: linear-gradient(135deg, #059669 0%, #10b981 100%); }
+.grad-rose    { background: linear-gradient(135deg, #e11d48 0%, #f43f5e 100%); }
+.grad-amber   { background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%); }
+.grad-cyan    { background: linear-gradient(135deg, #0891b2 0%, #06b6d4 100%); }
+.grad-blue    { background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%); }
+.grad-sky     { background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%); }
+
+/* ── Chat bubbles ─────────────────────────────────────── */
+.chat-ai   { background: #ffffff; border: 1px solid #e8edf5; }
+.chat-user { background: linear-gradient(135deg, #5b5ef6, #7c3aed); color: #fff; }
+
+/* ── Input focus ring ─────────────────────────────────── */
+.inp-base {
+  width: 100%;
+  border-radius: 10px;
+  border: 1.5px solid #dde3ef;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 14px;
+  padding-right: 14px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #0f172a;
+  background: #fafbff;
+  outline: none;
+  box-shadow: none;
+  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+  font-family: 'Inter', system-ui, sans-serif;
+  height: 40px;
+}
+input.inp-base, textarea.inp-base {
+  appearance: none;
+  -webkit-appearance: none;
+}
+.inp-base::placeholder { color: #a5b4cb; }
+.inp-base:focus {
+  border-color: #5b5ef6;
+  box-shadow: 0 0 0 3px rgba(91, 94, 246, 0.12);
+  background: #ffffff;
+}
+.inp-base:not(:focus) {
+  box-shadow: none;
+}
+.inp-error {
+  border-color: #f43f5e !important;
+  background: #fff5f7 !important;
+}
+
+/* Select arrow */
+select.inp-base {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a5b4cb' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-left: 14px !important;
+  padding-right: 34px !important;
+}
+
+/* ── Filter bar utility ───────────────────────────────── */
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.filter-row .inp-base {
+  height: 40px;
+}
+
+/* ── Page container ───────────────────────────────────── */
+.page-container {
+  width: 100%;
+  max-width: 100%;
+}

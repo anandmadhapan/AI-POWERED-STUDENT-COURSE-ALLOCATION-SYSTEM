@@ -1,0 +1,11 @@
+course_code,course_name,description,total_seats,obc_seats,sc_seats,st_seats
+CS101,Computer Science & Engineering,Core CS program covering algorithms data structures and software engineering.,60,16,9,5
+EC101,Electronics & Communication Engineering,Program covering electronics circuits and communication systems.,60,16,9,5
+ME101,Mechanical Engineering,Core mechanical engineering program covering thermodynamics and manufacturing.,60,16,9,5
+CE101,Civil Engineering,Civil and structural engineering program.,40,11,6,3
+BBA101,Business Administration,Undergraduate business and management program.,80,21,12,7
+IT101,Information Technology,IT program covering networking databases and web technologies.,60,16,9,5
+EE101,Electrical Engineering,Electrical systems power electronics and control systems.,60,16,9,5
+CH101,Chemical Engineering,Chemical processes and industrial applications.,40,11,6,3
+BT101,Biotechnology,Biomedical sciences and biotechnology applications.,40,11,6,3
+MCA101,Master of Computer Applications,Advanced computer applications and software development.,30,8,4,2

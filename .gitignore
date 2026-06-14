@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.db
+*.sqlite3
+*.sqlite
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env.local
+
+# Environment secrets — NEVER commit
+.env
+Backend/.env
+
+# Node / Frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+.cache/
+
+# Build outputs
+build/
+*.egg-info/
+.eggs/
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Test / coverage
+.coverage
+htmlcov/
+.pytest_cache/
