@@ -1,382 +1,501 @@
-# CourseFlow AI
+<div align="center">
 
-**Intelligent Student Course Allocation System** — merit-based seat allocation with category reservations, real-time analytics, and a natural-language AI assistant powered by Google Gemini.
+# 🎓 CourseFlow AI
+### AI-Powered Student Course Allocation System
 
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?logo=fastapi)](https://fastapi.tiangolo.com)
-[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?logo=postgresql)](https://postgresql.org)
-[![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python)](https://python.org)
-[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+<p align="center">
+  <img src="https://img.shields.io/badge/FastAPI-0.111-009688?style=for-the-badge&logo=fastapi&logoColor=white" />
+  <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" />
+  <img src="https://img.shields.io/badge/PostgreSQL-16-336791?style=for-the-badge&logo=postgresql&logoColor=white" />
+  <img src="https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white" />
+  <img src="https://img.shields.io/badge/Google_Gemini-2.0_Flash-4285F4?style=for-the-badge&logo=google&logoColor=white" />
+  <img src="https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge" />
+</p>
 
----
+<p align="center">
+  Merit-based course allocation with category reservations, preference cascading,<br/>
+  real-time analytics dashboard, and a natural-language AI assistant.
+</p>
 
-## Overview
+<p align="center">
+  <a href="#-quick-start">Quick Start</a> •
+  <a href="#-features">Features</a> •
+  <a href="#-tech-stack">Tech Stack</a> •
+  <a href="#-api-reference">API Docs</a> •
+  <a href="ARCHITECTURE.md">Architecture</a> •
+  <a href="DATABASE_SCHEMA.md">Schema</a>
+</p>
 
-CourseFlow AI automates the end-to-end student course allocation lifecycle:
-
-- **Merit-based ranking** — students sorted by marks (descending), application date (ascending) as tiebreaker
-- **Category reservation enforcement** — General / OBC / SC / ST quotas with open-pool overflow
-- **Preference cascading** — up to 3 ranked course preferences per student; system tries each in order
-- **One-shot allocation** — idempotent engine resets and re-runs cleanly at any time
-- **AI assistant** — Gemini 2.0 Flash answers natural-language queries about allocation data
-- **Role-based access** — `admin` (full CRUD) and `student` (own profile only) roles
-
----
-
-## Table of Contents
-
-1. [Architecture](#architecture)
-2. [Tech Stack](#tech-stack)
-3. [Project Structure](#project-structure)
-4. [Prerequisites](#prerequisites)
-5. [Quick Start](#quick-start)
-6. [Configuration](#configuration)
-7. [Database Setup](#database-setup)
-8. [Running in Development](#running-in-development)
-9. [Loading Sample Data](#loading-sample-data)
-10. [Running Allocation](#running-allocation)
-11. [API Reference](#api-reference)
-12. [Default Credentials](#default-credentials)
-13. [Production Checklist](#production-checklist)
-14. [Known Limitations](#known-limitations)
+</div>
 
 ---
 
-## Architecture
+## 📋 Table of Contents
 
-```
-┌─────────────────────────────────────┐
-│  React 19 SPA  (Vite + TanStack)    │
-│  localhost:5173                      │
-└──────────────┬──────────────────────┘
-               │ /api/*  (proxied by Vite)
-               ▼
-┌─────────────────────────────────────┐
-│  FastAPI  (uvicorn)                 │
-│  localhost:8000                      │
-│                                     │
-│  Controllers → Services → ORM       │
-│  JWT Auth  ·  Pydantic Schemas      │
-└──────────────┬──────────────────────┘
-               │ SQLAlchemy / psycopg2
-               ▼
-┌─────────────────────────────────────┐
-│  PostgreSQL  (Supabase)             │
-│  8 tables  ·  ENUM types            │
-└─────────────────────────────────────┘
-               +
-┌─────────────────────────────────────┐
-│  Google Gemini 2.0 Flash (ADK)      │
-│  NL → SQL → Result → NL             │
-└─────────────────────────────────────┘
-```
-
-Full architecture, database design decisions, AI integration approach, security model, and engineering challenges are documented in [`ARCHITECTURE.md`](ARCHITECTURE.md).
+- [Features](#-features)
+- [System Architecture](#-system-architecture)
+- [Tech Stack](#-tech-stack)
+- [Project Structure](#-project-structure)
+- [Prerequisites](#-prerequisites)
+- [Quick Start](#-quick-start)
+- [Environment Configuration](#-environment-configuration)
+- [Database Setup](#-database-setup)
+- [Loading Sample Data](#-loading-sample-data)
+- [Running Allocation Engine](#-running-allocation-engine)
+- [API Reference](#-api-reference)
+- [Default Credentials](#-default-credentials)
+- [Production Checklist](#-production-checklist)
+- [Known Limitations](#-known-limitations)
+- [Contributing](#-contributing)
+- [License](#-license)
 
 ---
 
-## Tech Stack
+## ✨ Features
 
-| Concern | Technology |
+| Feature | Description |
 |---|---|
-| Frontend framework | React 19, Vite 8 |
-| Server state | TanStack Query v5 |
-| Forms | React Hook Form v7 |
-| Backend framework | FastAPI 0.111 |
-| ORM | SQLAlchemy 2.x |
-| Database | PostgreSQL 16 (Supabase) |
-| Authentication | JWT — python-jose, bcrypt via passlib |
-| AI | Google Gemini 2.0 Flash via ADK 0.3+ |
-| Styling | Tailwind CSS v4 + inline styles |
-| HTTP client | Axios |
+| 🏆 **Merit-based Ranking** | Students ranked by marks (desc) · application date as tiebreaker |
+| 🎯 **Category Reservations** | General / OBC / SC / ST quotas with automatic open-pool overflow |
+| 🔄 **Preference Cascading** | Up to 3 ranked course preferences tried in order per student |
+| ⚡ **One-shot Allocation** | Idempotent engine — reset and re-run at any time, always consistent |
+| 🤖 **AI Assistant** | Gemini 2.0 Flash answers natural-language queries on allocation data |
+| 📊 **Real-time Dashboard** | Live seat counters, category breakdown, course fill rates |
+| 🔐 **Role-based Access** | `admin` (full CRUD) · `student` (own profile only) |
+| 📋 **Audit Trail** | Every allocation decision logged with reason |
+| 📥 **CSV Import** | Bulk-import students and courses from CSV files |
+| 🌐 **REST API** | Fully documented OpenAPI/Swagger spec at `/docs` |
 
 ---
 
-## Project Structure
+## 🏗 System Architecture
 
 ```
-.
-├── Backend/
-│   ├── main.py                   # FastAPI application entry point
-│   ├── requirements.txt          # Python dependencies (pinned)
-│   ├── seed_data.py              # Quick seeder — 5 courses, 20 students
-│   ├── import_csv.py             # Bulk CSV importer with --clear, --courses, --students flags
-│   ├── .env                      # Runtime secrets (never commit)
-│   ├── .env.example              # Safe template to share
-│   ├── configs/
-│   │   ├── base_config.py        # JWT config, Gemini key
-│   │   └── dev_config.py
-│   ├── models/
-│   │   ├── __init__.py           # SQLAlchemy engine + session factory
-│   │   └── models.py             # ORM models (8 tables, 4 enums)
-│   ├── schemas/                  # Pydantic v2 request/response models
+┌──────────────────────────────────────────────────────────────┐
+│                     PRESENTATION LAYER                        │
+│                                                              │
+│   React 19 SPA  ·  Vite 8  ·  TanStack Query v5             │
+│   React Hook Form  ·  Recharts  ·  Tailwind CSS v4           │
+│   http://localhost:5173                                       │
+└────────────────────────┬─────────────────────────────────────┘
+                         │  HTTP/REST  ·  JWT Bearer
+                         │  /api/* → proxied by Vite
+                         ▼
+┌──────────────────────────────────────────────────────────────┐
+│                     APPLICATION LAYER                         │
+│                                                              │
+│   FastAPI 0.111  ·  uvicorn  ·  http://localhost:8000        │
+│                                                              │
+│   ┌──────────┬──────────┬────────────┬──────────┬────────┐  │
+│   │  /auth   │/students │  /courses  │/allocation│  /ai  │  │
+│   └────┬─────┴────┬─────┴─────┬──────┴────┬─────┴───┬────┘  │
+│        │          │           │           │         │        │
+│   ┌────▼──────────▼───────────▼───────────▼─────────▼────┐  │
+│   │              Services (Business Logic)                │  │
+│   │   AllocationService  ·  AIService (NL→SQL→NL)        │  │
+│   └────────────────────────┬──────────────────────────────┘  │
+│                            │  SQLAlchemy ORM · Pydantic v2   │
+└────────────────────────────┼─────────────────────────────────┘
+                             │  psycopg2 / SQLAlchemy
+                             ▼
+┌──────────────────────────────────────────────────────────────┐
+│                       DATA LAYER                              │
+│   PostgreSQL 16  (Supabase)                                  │
+│   8 tables  ·  4 ENUM types  ·  12+ indexes                  │
+└──────────────────────────────────────────────────────────────┘
+                             +
+┌──────────────────────────────────────────────────────────────┐
+│                     EXTERNAL SERVICES                         │
+│   Google Gemini 2.0 Flash  ·  ADK 0.3+                      │
+│   NL Question → SQL Generation → Execution → NL Answer       │
+└──────────────────────────────────────────────────────────────┘
+```
+
+> Deep-dive: [`ARCHITECTURE.md`](ARCHITECTURE.md) covers design decisions, AI integration approach, security model, and all engineering challenges with solutions.
+
+---
+
+## 🛠 Tech Stack
+
+**Backend**
+
+| Package | Version | Role |
+|---|---|---|
+| FastAPI | 0.111+ | REST API framework |
+| uvicorn | 0.29+ | ASGI server |
+| SQLAlchemy | 2.x | ORM + query builder |
+| psycopg2-binary | 2.9+ | PostgreSQL driver |
+| Pydantic | 2.7+ | Schema validation |
+| python-jose | 3.3+ | JWT encode/decode |
+| passlib[bcrypt] | 1.7+ | Password hashing |
+| google-adk | 0.3+ | Gemini AI agent framework |
+| python-dotenv | 1.x | Environment management |
+
+**Frontend**
+
+| Package | Version | Role |
+|---|---|---|
+| React | 19 | UI framework |
+| Vite | 8 | Build tool + dev server |
+| TanStack Query | 5 | Server state management |
+| React Hook Form | 7 | Form state + validation |
+| Recharts | 3 | Dashboard charts |
+| Axios | 1.x | HTTP client |
+| React Router | 7 | Client-side routing |
+| Tailwind CSS | 4 | Utility-first styling |
+| Lucide React | 1.x | Icon set |
+
+---
+
+## 📁 Project Structure
+
+```
+AI-POWERED-STUDENT-COURSE-ALLOCATION-SYSTEM/
+│
+├── 📂 Backend/
+│   ├── main.py                     # FastAPI app · lifespan · CORS · IST datetime encoding
+│   ├── requirements.txt            # All Python dependencies
+│   ├── seed_data.py                # Quick seeder — 5 courses, 20 students
+│   ├── import_csv.py               # Bulk CSV importer (--courses / --students / --clear)
+│   ├── .env                        # ⚠️  Runtime secrets — never commit
+│   ├── .env.example                # ✅  Safe template — commit this
+│   │
+│   ├── 📂 configs/
+│   │   ├── base_config.py          # JWT settings, token expiry, Gemini key
+│   │   └── dev_config.py           # Dev overrides
+│   │
+│   ├── 📂 models/
+│   │   ├── __init__.py             # Engine, SessionLocal, get_db, init_tables
+│   │   └── models.py               # 8 ORM models · 4 ENUMs · all relationships
+│   │
+│   ├── 📂 schemas/                 # Pydantic v2 request / response models
 │   │   ├── user.py
 │   │   ├── student.py
 │   │   ├── course.py
 │   │   ├── allocation.py
 │   │   └── ai_chat.py
-│   ├── resources/                # Route controllers (thin HTTP layer)
-│   │   ├── authController.py
-│   │   ├── studentController.py
-│   │   ├── courseController.py
-│   │   ├── allocationController.py
-│   │   ├── dashboardController.py
-│   │   └── aiController.py
-│   ├── services/                 # Business logic (no HTTP concerns)
-│   │   ├── allocation_service.py # Core allocation engine
-│   │   └── ai_service.py        # Gemini NL→SQL→NL pipeline
-│   ├── routes/
-│   │   └── __init__.py          # Aggregates all routers under /api
-│   └── data/
-│       ├── courses.csv           # 10 courses with category seat configs
-│       └── students.csv         # 50 students across all categories
+│   │
+│   ├── 📂 resources/               # Route controllers — thin HTTP layer only
+│   │   ├── authController.py       # Login, register, user CRUD, JWT
+│   │   ├── studentController.py    # Student CRUD + auto student_id generation
+│   │   ├── courseController.py     # Course CRUD + category seat management
+│   │   ├── allocationController.py # Trigger engine, list results, reset
+│   │   ├── dashboardController.py  # Aggregated analytics endpoints
+│   │   └── aiController.py         # Gemini chat, history, clear
+│   │
+│   ├── 📂 services/                # Business logic — no HTTP concerns
+│   │   ├── allocation_service.py   # Core allocation algorithm
+│   │   └── ai_service.py           # NL → SQL → Result → NL pipeline
+│   │
+│   ├── 📂 routes/
+│   │   └── __init__.py             # Mounts all routers under /api prefix
+│   │
+│   └── 📂 data/
+│       ├── courses.csv             # 10 sample courses with seat configs
+│       └── students.csv            # 50 sample students across all categories
 │
-├── Frontend/
+├── 📂 Frontend/
 │   ├── index.html
-│   ├── vite.config.js            # Proxy: /api → localhost:8000
-│   ├── src/
-│   │   ├── main.jsx
-│   │   ├── App.jsx
-│   │   ├── index.css             # Global styles, Tailwind import, animations
-│   │   ├── pages/
-│   │   │   ├── Login.jsx
-│   │   │   ├── Dashboard.jsx
-│   │   │   ├── Students.jsx
-│   │   │   ├── Courses.jsx
-│   │   │   ├── Allocation.jsx
-│   │   │   ├── AIAssistant.jsx
-│   │   │   ├── UserManagement.jsx
-│   │   │   └── StudentProfile.jsx
-│   │   ├── components/ui/        # Table, Badge, Button, Modal, Input, Card, Toast
-│   │   ├── layouts/AppLayout.jsx # Collapsible sidebar + topbar
-│   │   ├── services/api.js       # Axios client — all API calls
-│   │   ├── store/                # Auth store, Toast store
-│   │   ├── routes/AppRoutes.jsx  # Protected + public routes
-│   │   └── utils/helpers.js      # Date formatters, error extractor, chart colours
-│   └── package.json
+│   ├── vite.config.js              # /api proxy → localhost:8000
+│   ├── package.json
+│   │
+│   └── 📂 src/
+│       ├── main.jsx                # React root · QueryClient · Router
+│       ├── App.jsx
+│       ├── index.css               # Tailwind import · CSS variables · animations
+│       │
+│       ├── 📂 pages/
+│       │   ├── Login.jsx           # JWT auth form
+│       │   ├── Dashboard.jsx       # KPI cards · charts · stats
+│       │   ├── Students.jsx        # CRUD · search · category filter
+│       │   ├── Courses.jsx         # CRUD · category seat config
+│       │   ├── Allocation.jsx      # Run engine · view results · audit log
+│       │   ├── AIAssistant.jsx     # Chat UI · session history
+│       │   ├── UserManagement.jsx  # Admin-only user CRUD
+│       │   └── StudentProfile.jsx  # Student self-service view
+│       │
+│       ├── 📂 components/ui/       # Table · Badge · Button · Modal · Input · Card · Toast
+│       ├── 📂 layouts/
+│       │   └── AppLayout.jsx       # Collapsible sidebar · topbar · route guards
+│       ├── 📂 services/
+│       │   └── api.js              # Axios client · JWT interceptor · 401 redirect
+│       ├── 📂 store/
+│       │   ├── authStore.jsx       # Auth state (login, logout, persist)
+│       │   └── toastStore.jsx      # Global toast notifications
+│       ├── 📂 routes/
+│       │   └── AppRoutes.jsx       # Protected + public route definitions
+│       └── 📂 utils/
+│           └── helpers.js          # Date formatters · error extractor · chart colours
 │
-├── README.md                     # This file
-├── ARCHITECTURE.md               # Design decisions, challenges, solutions
-├── API_DOCUMENTATION.md          # Full endpoint reference with examples
-├── DATABASE_SCHEMA.md            # Schema, constraints, indexes, seat logic
+├── README.md                       # This file
+├── ARCHITECTURE.md                 # Architecture · DB design · AI approach · challenges
+├── API_DOCUMENTATION.md            # Full endpoint reference with examples
+├── DATABASE_SCHEMA.md              # Schema · constraints · indexes · seat pool logic
 └── .gitignore
 ```
 
 ---
 
-## Prerequisites
+## ✅ Prerequisites
 
-| Requirement | Version | Notes |
-|---|---|---|
-| Python | 3.11+ | Earlier versions untested |
-| Node.js | 18+ | 20 LTS recommended |
-| npm | 9+ | Comes with Node |
-| PostgreSQL | 14+ | Supabase free tier works |
-| Google AI Studio key | — | Free at [aistudio.google.com](https://aistudio.google.com/app/apikey) |
+| Requirement | Min Version | Recommended | Notes |
+|---|---|---|---|
+| Python | 3.11 | 3.12 | f-strings, match statements used |
+| Node.js | 18 | 20 LTS | ESM support required |
+| npm | 9 | 10 | Ships with Node |
+| PostgreSQL | 14 | 16 | Supabase free tier sufficient |
+| Google AI Studio key | — | — | Free at [aistudio.google.com](https://aistudio.google.com/app/apikey) |
 
 ---
 
-## Quick Start
+## 🚀 Quick Start
 
 ```bash
-# Clone
-git clone <repository-url>
-cd "Anand Task-1"
+# 1. Clone the repository
+git clone https://github.com/anandmadhapan/AI-POWERED-STUDENT-COURSE-ALLOCATION-SYSTEM.git
+cd AI-POWERED-STUDENT-COURSE-ALLOCATION-SYSTEM
+```
 
-# Backend
+**Terminal 1 — Backend**
+
+```bash
 cd Backend
+
+# Create and activate virtual environment
 python -m venv venv
 venv\Scripts\activate          # Windows
 # source venv/bin/activate     # macOS / Linux
-pip install -r requirements.txt
-cp .env.example .env           # then edit .env with your credentials
-uvicorn main:app --reload --port 8000
 
-# Frontend (new terminal)
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure environment
+cp .env.example .env
+# Edit .env with your DB credentials and Google API key
+
+# Start API server (hot reload)
+uvicorn main:app --reload --port 8000
+```
+
+**Terminal 2 — Frontend**
+
+```bash
 cd Frontend
 npm install
 npm run dev
 ```
 
-Open **http://localhost:5173** — the Vite proxy routes `/api/*` to the FastAPI server automatically.
+**Open** → http://localhost:5173
+
+> The Vite dev server proxies all `/api/*` requests to `localhost:8000` automatically. No CORS configuration needed in development.
 
 ---
 
-## Configuration
+## ⚙️ Environment Configuration
 
-Edit `Backend/.env`:
+Copy `.env.example` to `.env` and fill in your values:
 
 ```env
-# Environment
+# ── Application ──────────────────────────────────
 ASCEND_ENV=dev
 
-# PostgreSQL — replace with your actual credentials
-DB_HOST=your-host.supabase.co
+# ── PostgreSQL (Supabase or self-hosted) ─────────
+DB_HOST=your-project.supabase.co
 DB_PORT=5432
 DB_NAME=postgres
 DB_USER=postgres
-DB_PASSWORD=your-password
+DB_PASSWORD=your-database-password
 
-# Google Gemini AI
-# Get a free key: https://aistudio.google.com/app/apikey
-GOOGLE_API_KEY=your-key-here
+# ── Google Gemini AI ──────────────────────────────
+# Free key: https://aistudio.google.com/app/apikey
+GOOGLE_API_KEY=your-api-key-here
 
-# JWT — generate strong random values for production:
-# python -c "import secrets; print(secrets.token_hex(32))"
-SECRET_KEY=change-this-in-production
-SESSION_SECRET_KEY=change-this-in-production
+# ── JWT Security ─────────────────────────────────
+# Generate: python -c "import secrets; print(secrets.token_hex(32))"
+SECRET_KEY=replace-with-64-char-random-hex
+SESSION_SECRET_KEY=replace-with-another-64-char-random-hex
 ```
 
-> `.env` is listed in `.gitignore`. Use `.env.example` as the committed template.
+> ⚠️ `.env` is in `.gitignore` and must never be committed. Only `.env.example` belongs in source control.
 
 ---
 
-## Database Setup
+## 🗄 Database Setup
 
-Tables are created automatically on first startup via `init_tables()` in the FastAPI lifespan handler. No manual migration step required.
+Tables, indexes, and ENUM types are created automatically on first server startup — no manual migration required.
 
-If you need to inspect or recreate the schema manually, refer to [`DATABASE_SCHEMA.md`](DATABASE_SCHEMA.md).
-
----
-
-## Running in Development
-
-```bash
-# Backend — with hot reload
-uvicorn main:app --reload --port 8000
-
-# Swagger UI (interactive API docs)
-open http://localhost:8000/docs
-
-# ReDoc
-open http://localhost:8000/redoc
-
-# Frontend
-npm run dev   # from Frontend/
-
-# Production build
-npm run build
-npm run preview
+```
+FastAPI lifespan → init_tables() → SQLAlchemy create_all()
 ```
 
+To inspect the schema, constraints, and seat pool logic in detail: [`DATABASE_SCHEMA.md`](DATABASE_SCHEMA.md)
+
 ---
 
-## Loading Sample Data
+## 📦 Loading Sample Data
 
-### Option A — Python seeder (5 courses · 20 students)
+### Option A — Python seeder `(5 courses · 20 students)`
 
 ```bash
 cd Backend
 python seed_data.py
 ```
 
-### Option B — CSV bulk import (10 courses · 50 students)
+### Option B — CSV bulk import `(10 courses · 50 students)`
 
 ```bash
 cd Backend
 
-# Import everything
+# Import both courses and students
 python import_csv.py
 
-# Import courses only
-python import_csv.py --courses
+# Selective import
+python import_csv.py --courses      # courses only
+python import_csv.py --students     # students only
 
-# Import students only
-python import_csv.py --students
-
-# Wipe existing data and reimport cleanly
+# Hard reset and reimport from scratch
 python import_csv.py --clear
 ```
 
-CSV source files: `Backend/data/courses.csv`, `Backend/data/students.csv`
+Both scripts are **idempotent** — re-running skips records that already exist.
 
-Both scripts are idempotent — re-running skips records that already exist.
+Source files: `Backend/data/courses.csv` · `Backend/data/students.csv`
 
 ---
 
-## Running Allocation
+## ⚙️ Running Allocation Engine
 
-Once students and courses are loaded, trigger the allocation engine:
+**Via the UI:** Navigate to the **Allocation** page → click **Run Allocation**
+
+**Via curl:**
 
 ```bash
-# Via curl (get the token first)
-TOKEN=$(curl -s -X POST http://localhost:8000/api/auth/login \
+# Step 1 — Get token
+TOKEN=$(curl -s -X POST http://localhost:8000/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"admin123"}' \
+  -d '{"username":"admin@courseflow.com","password":"admin123"}' \
   | python -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
 
-curl -s -X POST http://localhost:8000/api/allocation/process \
+# Step 2 — Run allocation
+curl -s -X POST http://localhost:8000/allocation/process \
   -H "Authorization: Bearer $TOKEN" | python -m json.tool
 ```
 
-Or use the **Allocation** page in the UI — click **Run Allocation**.
+**What the engine does:**
 
-The engine:
-1. Resets all counters and clears previous results
-2. Sorts students by marks desc, application date asc
-3. For each student, attempts preference 1 → 2 → 3 using reserved + open seat pools
-4. Persists allocations and a full audit log
-5. Returns a summary (total, allocated, not-allocated, preference satisfaction breakdown)
-
----
-
-## API Reference
-
-Full endpoint documentation with request/response examples: [`API_DOCUMENTATION.md`](API_DOCUMENTATION.md)
-
-Summary of available routes:
-
-| Method | Path | Auth | Description |
-|---|---|---|---|
-| POST | `/api/auth/login` | — | Obtain JWT token |
-| GET | `/api/auth/me` | ✓ | Current user info |
-| POST | `/api/auth/register-student` | Admin | Register student + login account |
-| GET | `/api/students` | ✓ | List students (search, category, status filters) |
-| PUT | `/api/students/{id}` | Admin | Update student |
-| DELETE | `/api/students/{id}` | Admin | Soft-delete student |
-| GET | `/api/courses` | ✓ | List courses |
-| POST | `/api/courses` | Admin | Create course with category seats |
-| PUT | `/api/courses/{id}` | Admin | Update course |
-| POST | `/api/allocation/process` | Admin | Run allocation engine |
-| GET | `/api/allocation` | ✓ | List allocation results |
-| DELETE | `/api/allocation/reset` | Admin | Reset all allocations |
-| GET | `/api/dashboard/summary` | ✓ | System-wide stats |
-| POST | `/api/ai/chat` | ✓ | Ask AI a question |
-| GET | `/api/ai/chat/history` | ✓ | Retrieve chat history |
+1. Resets all seat counters and clears previous allocation records
+2. Sorts all active students: `marks DESC`, `application_date ASC` (tiebreaker)
+3. For each student, attempts preferences 1 → 2 → 3:
+   - First tries the student's reserved category pool
+   - Falls back to the open (unreserved) pool if the reserved pool is exhausted
+4. Persists allocations + a full audit log of every decision
+5. Returns a summary: total · allocated · not-allocated · preference satisfaction breakdown
 
 ---
 
-## Default Credentials
+## 📖 API Reference
 
-| Role | Username / Email | Password |
+Interactive docs: **http://localhost:8000/docs** (Swagger UI)  
+Alternative: **http://localhost:8000/redoc**  
+Full reference: [`API_DOCUMENTATION.md`](API_DOCUMENTATION.md)
+
+**Endpoint Summary**
+
+| Method | Endpoint | Auth | Description |
+|---|---|:---:|---|
+| `POST` | `/auth/login` | — | Obtain JWT access token |
+| `GET` | `/auth/me` | ✓ | Current authenticated user |
+| `POST` | `/auth/register-student` | 🔑 | Register student + create login account |
+| `GET` | `/auth/users` | 🔑 | List all user accounts |
+| `PUT` | `/auth/users/{id}` | 🔑 | Update user account |
+| `DELETE` | `/auth/users/{id}` | 🔑 | Delete user account |
+| `GET` | `/students` | ✓ | List students with search · category · status filters |
+| `PUT` | `/students/{id}` | 🔑 | Update student record |
+| `DELETE` | `/students/{id}` | 🔑 | Soft-delete student |
+| `GET` | `/courses` | ✓ | List courses with seat breakdown |
+| `POST` | `/courses` | 🔑 | Create course with category seat config |
+| `PUT` | `/courses/{id}` | 🔑 | Update course |
+| `DELETE` | `/courses/{id}` | 🔑 | Soft-delete course |
+| `POST` | `/allocation/process` | 🔑 | Run allocation engine |
+| `GET` | `/allocation` | ✓ | List allocation results |
+| `GET` | `/allocation/logs` | ✓ | Allocation audit trail |
+| `DELETE` | `/allocation/reset` | 🔑 | Reset all allocations |
+| `GET` | `/dashboard/summary` | ✓ | System-wide KPIs |
+| `GET` | `/dashboard/course-stats` | ✓ | Per-course fill rates |
+| `GET` | `/dashboard/category-wise` | ✓ | Category allocation breakdown |
+| `POST` | `/ai/chat` | ✓ | Ask AI a natural language question |
+| `GET` | `/ai/chat/history` | ✓ | Retrieve conversation history |
+| `DELETE` | `/ai/chat/history` | ✓ | Clear chat history |
+
+> ✓ = JWT required · 🔑 = Admin role required
+
+---
+
+## 🔑 Default Credentials
+
+| Role | Email | Password |
 |---|---|---|
-| Admin | admin@courseflow.com | admin123 |
+| Admin | `admin@courseflow.com` | `admin123` |
 
-> Change the default password before any public deployment.
-
----
-
-## Production Checklist
-
-- [ ] Set `SECRET_KEY` and `SESSION_SECRET_KEY` to cryptographically random 64-byte hex strings
-- [ ] Restrict `allow_origins` in `main.py` CORS middleware to your frontend domain
-- [ ] Enable HTTPS on the API server (reverse proxy via nginx / caddy)
-- [ ] Set `ASCEND_ENV=production` and disable `/docs` and `/redoc` endpoints
-- [ ] Rotate `GOOGLE_API_KEY` and restrict it to your server's IP in Google Cloud Console
-- [ ] Use Supabase connection pooler (Transaction mode) for high-concurrency workloads
-- [ ] Set `ACCESS_TOKEN_EXPIRE_MINUTES` to a shorter window (15–30 min) for sensitive environments
-- [ ] Add rate limiting middleware (e.g. `slowapi`) on auth endpoints
-- [ ] Store secrets in an environment secret manager (AWS Secrets Manager, Doppler, etc.) — not in `.env` files on disk
+> **Security note:** Change this password immediately on any shared or public deployment.
 
 ---
 
-## Known Limitations
+## 🚢 Production Checklist
 
-- Allocation does not support waitlisting — students either get a seat or are marked Not Allocated
-- No email notifications on allocation result
-- AI assistant is read-only (SELECT queries only); it cannot modify data
-- JWT tokens are not revocable before expiry (no token blacklist)
-- The frontend is an SPA with no SSR; crawlability is limited without a meta-tag strategy
-#   A I - P O W E R E D - S T U D E N T - C O U R S E - A L L O C A T I O N - S Y S T E M  
- #   A I - P O W E R E D - S T U D E N T - C O U R S E - A L L O C A T I O N - S Y S T E M  
- 
+**Security**
+- [ ] Rotate `SECRET_KEY` and `SESSION_SECRET_KEY` — use `secrets.token_hex(32)`
+- [ ] Restrict `allow_origins` in CORS middleware to your frontend domain
+- [ ] Disable Swagger UI — remove or guard `/docs` and `/redoc` in production
+- [ ] Rotate and IP-restrict `GOOGLE_API_KEY` in Google Cloud Console
+- [ ] Store all secrets in a secrets manager (AWS Secrets Manager, Doppler, Vault)
+- [ ] Shorten `ACCESS_TOKEN_EXPIRE_MINUTES` to 15–30 minutes
+
+**Infrastructure**
+- [ ] Terminate TLS at the reverse proxy (nginx / Caddy / AWS ALB)
+- [ ] Set `ASCEND_ENV=production`
+- [ ] Enable Supabase connection pooler (Transaction mode) for concurrent workloads
+- [ ] Add rate limiting on auth endpoints (`slowapi` or API Gateway)
+- [ ] Set up structured logging and ship logs to a centralised sink
+
+**Frontend**
+- [ ] Run `npm run build` and serve `dist/` as static files
+- [ ] Set `VITE_API_BASE_URL` to your production API domain
+- [ ] Configure a CDN with caching headers for static assets
+
+---
+
+## ⚠️ Known Limitations
+
+- Allocation does not implement a waitlist — outcome is binary: **Allocated** or **Not Allocated**
+- No email / SMS notification on allocation result
+- AI assistant is strictly read-only — it executes `SELECT` queries only
+- JWT tokens cannot be individually revoked before expiry (no token blacklist / blocklist)
+- No automated database migration tooling (Alembic) — schema changes require manual intervention
+- Single-region deployment only — no multi-region support
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch — `git checkout -b feature/your-feature`
+3. Commit your changes — `git commit -m "feat: add your feature"`
+4. Push to the branch — `git push origin feature/your-feature`
+5. Open a Pull Request
+
+Please follow [Conventional Commits](https://www.conventionalcommits.org/) for commit messages.
+
+---
+
+## 📄 License
+
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+<div align="center">
+
+Built with ❤️ by **Anand** · [GitHub](https://github.com/anandmadhapan)
+
+</div>
