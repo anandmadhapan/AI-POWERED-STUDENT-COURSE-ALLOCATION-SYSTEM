@@ -17,6 +17,7 @@ env/
 # Environment secrets — NEVER commit
 .env
 Backend/.env
+Backend/.env.example
 
 # Node / Frontend
 node_modules/
