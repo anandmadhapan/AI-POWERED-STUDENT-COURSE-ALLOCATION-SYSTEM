@@ -7,6 +7,8 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 
 from models import get_db
+from models.models import User
+from resources.authController import get_current_user
 from services.ai_service import chat_with_ai, get_chat_history
 from schemas.ai_chat import AIChatRequest, AIChatResponse, AIChatHistoryResponse
 
@@ -42,6 +44,7 @@ def ai_status():
 async def ask_ai(
     payload: AIChatRequest,
     db: Session = Depends(get_db),
+    _: User = Depends(get_current_user),
 ):
     """
     Ask the Gemini AI assistant natural-language questions about allocation data.
@@ -80,6 +83,7 @@ def list_chat_history(
     skip:  int = Query(0,  ge=0),
     limit: int = Query(50, ge=1, le=200),
     db: Session = Depends(get_db),
+    _: User = Depends(get_current_user),
 ):
     """Retrieve past AI conversations (most recent first)."""
     result = get_chat_history(db=db, session_id=session_id, skip=skip, limit=limit)
@@ -100,6 +104,7 @@ def list_chat_history(
 def clear_chat_history(
     session_id: Optional[str] = Query(None, description="Clear specific session (None = clear all)"),
     db: Session = Depends(get_db),
+    _: User = Depends(get_current_user),
 ):
     """Clear AI chat history (optionally for a specific session)."""
     from models.models import AIChatHistory
