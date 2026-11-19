@@ -383,7 +383,8 @@ export default function Login() {
 
               <div style={{ height: 1, background: '#f0f4ff', margin: '2px 0' }} />
 
-              {/* Credentials hint */}
+              {/* Credentials hint: development builds only (seed data) */}
+              {import.meta.env.DEV && (
               <div style={{
                 padding: '10px 14px', borderRadius: 10,
                 background: 'linear-gradient(135deg,#eef2ff,#f5f3ff)',
@@ -399,13 +400,14 @@ export default function Login() {
                 </div>
                 <div>
                   <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: '#4338ca', letterSpacing: '0.02em' }}>
-                    Demo Admin Credentials
+                    Development login (seed data)
                   </p>
                   <p style={{ margin: '2px 0 0', fontSize: 12, color: '#6366f1', fontFamily: 'monospace' }}>
                     admin@courseflow.com&nbsp;·&nbsp;admin123
                   </p>
                 </div>
               </div>
+              )}
 
               {/* Submit */}
               <button
