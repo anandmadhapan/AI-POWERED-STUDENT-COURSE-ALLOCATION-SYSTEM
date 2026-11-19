@@ -12,6 +12,7 @@ from google import genai
 from google.genai import types as genai_types
 
 from models.models import AIChatHistory
+from services.sql_guard import ReadOnlyQueryError, run_read_only_query
 
 # =============================================
 # Gemini client (singleton)
@@ -79,27 +80,25 @@ def _clean(text: str) -> str:
     text = re.sub(r"\n{3,}", "\n\n", text)
     return text.strip()
 
+
 # =============================================
 # Safe SQL executor
 # =============================================
 def _run_sql(db: Session, sql: str) -> Optional[str]:
-    clean = sql.strip().rstrip(";")
-    if not clean.upper().lstrip().startswith(("SELECT", "WITH")):
-        return None
+    """Run AI-generated SQL read-only (see services/sql_guard.py)."""
     try:
-        with db.begin_nested():
-            result = db.execute(text(clean))
-            rows = result.fetchall()
-            if not rows:
-                return "No results found."
-            cols = list(result.keys())
-            lines = [" | ".join(cols), "-" * 40]
-            lines += [" | ".join(str(v) for v in row) for row in rows[:30]]
-            if len(rows) > 30:
-                lines.append(f"... and {len(rows) - 30} more rows")
-            return "\n".join(lines)
+        cols, rows = run_read_only_query(db, sql)
+    except ReadOnlyQueryError:
+        return None
     except Exception as e:
         return f"SQL error: {e}"
+    if not rows:
+        return "No results found."
+    lines = [" | ".join(cols), "-" * 40]
+    lines += [" | ".join(str(v) for v in row) for row in rows[:30]]
+    if len(rows) > 30:
+        lines.append(f"... and {len(rows) - 30} more rows")
+    return "\n".join(lines)
 
 # =============================================
 # Extract SQL from response
