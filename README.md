@@ -1,16 +1,7 @@
 <div align="center">
 
-# 🎓 CourseFlow AI
+# CourseFlow AI
 ### AI-Powered Student Course Allocation System
-
-<p align="center">
-  <img src="https://img.shields.io/badge/FastAPI-0.111-009688?style=for-the-badge&logo=fastapi&logoColor=white" />
-  <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" />
-  <img src="https://img.shields.io/badge/PostgreSQL-16-336791?style=for-the-badge&logo=postgresql&logoColor=white" />
-  <img src="https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white" />
-  <img src="https://img.shields.io/badge/Google_Gemini-2.0_Flash-4285F4?style=for-the-badge&logo=google&logoColor=white" />
-  <img src="https://img.shields.io/badge/License-MIT-22c55e?style=for-the-badge" />
-</p>
 
 <p align="center">
   Merit-based course allocation with category reservations, preference cascading,<br/>
@@ -18,10 +9,10 @@
 </p>
 
 <p align="center">
-  <a href="#-quick-start">Quick Start</a> •
-  <a href="#-features">Features</a> •
-  <a href="#-tech-stack">Tech Stack</a> •
-  <a href="#-api-reference">API Docs</a> •
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#features">Features</a> •
+  <a href="#tech-stack">Tech Stack</a> •
+  <a href="#api-reference">API Docs</a> •
   <a href="ARCHITECTURE.md">Architecture</a> •
   <a href="DATABASE_SCHEMA.md">Schema</a>
 </p>
@@ -30,45 +21,45 @@
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-- [Features](#-features)
-- [System Architecture](#-system-architecture)
-- [Tech Stack](#-tech-stack)
-- [Project Structure](#-project-structure)
-- [Prerequisites](#-prerequisites)
-- [Quick Start](#-quick-start)
-- [Environment Configuration](#-environment-configuration)
-- [Database Setup](#-database-setup)
-- [Loading Sample Data](#-loading-sample-data)
-- [Running Allocation Engine](#-running-allocation-engine)
-- [API Reference](#-api-reference)
-- [Default Credentials](#-default-credentials)
-- [Production Checklist](#-production-checklist)
-- [Known Limitations](#-known-limitations)
-- [Contributing](#-contributing)
-- [License](#-license)
+- [Features](#features)
+- [System Architecture](#system-architecture)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Quick Start](#quick-start)
+- [Environment Configuration](#environment-configuration)
+- [Database Setup](#database-setup)
+- [Loading Sample Data](#loading-sample-data)
+- [Running Allocation Engine](#running-allocation-engine)
+- [API Reference](#api-reference)
+- [Development Credentials](#development-credentials)
+- [Production Checklist](#production-checklist)
+- [Known Limitations](#known-limitations)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
-## ✨ Features
+## Features
 
 | Feature | Description |
 |---|---|
-| 🏆 **Merit-based Ranking** | Students ranked by marks (desc) · application date as tiebreaker |
-| 🎯 **Category Reservations** | General / OBC / SC / ST quotas with automatic open-pool overflow |
-| 🔄 **Preference Cascading** | Up to 3 ranked course preferences tried in order per student |
-| ⚡ **One-shot Allocation** | Idempotent engine — reset and re-run at any time, always consistent |
-| 🤖 **AI Assistant** | Gemini 2.0 Flash answers natural-language queries on allocation data |
-| 📊 **Real-time Dashboard** | Live seat counters, category breakdown, course fill rates |
-| 🔐 **Role-based Access** | `admin` (full CRUD) · `student` (own profile only) |
-| 📋 **Audit Trail** | Every allocation decision logged with reason |
-| 📥 **CSV Import** | Bulk-import students and courses from CSV files |
-| 🌐 **REST API** | Fully documented OpenAPI/Swagger spec at `/docs` |
+| **Merit-based Ranking** | Students ranked by marks (desc) · application date as tiebreaker |
+| **Category Reservations** | General / OBC / SC / ST quotas with automatic open-pool overflow |
+| **Preference Cascading** | Up to 3 ranked course preferences tried in order per student |
+| **One-shot Allocation** | Idempotent engine — reset and re-run at any time, always consistent |
+| **AI Assistant** | Gemini 2.0 Flash answers natural-language questions about allocation data (read-only SQL) |
+| **Real-time Dashboard** | Live seat counters, category breakdown, course fill rates |
+| **Role-based Access** | `admin` (full CRUD) · `student` (own profile only) |
+| **Audit Trail** | Every allocation decision logged with reason |
+| **CSV Import** | Bulk-import students and courses from CSV files |
+| **REST API** | Fully documented OpenAPI/Swagger spec at `/docs` |
 
 ---
 
-## 🏗 System Architecture
+## System Architecture
 
 ```
 ┌──────────────────────────────────────────────────────────────┐
@@ -115,7 +106,7 @@
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 **Backend**
 
@@ -147,7 +138,7 @@
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 AI-POWERED-STUDENT-COURSE-ALLOCATION-SYSTEM/
@@ -236,7 +227,7 @@ AI-POWERED-STUDENT-COURSE-ALLOCATION-SYSTEM/
 
 ---
 
-## ✅ Prerequisites
+## Prerequisites
 
 | Requirement | Min Version | Recommended | Notes |
 |---|---|---|---|
@@ -248,7 +239,7 @@ AI-POWERED-STUDENT-COURSE-ALLOCATION-SYSTEM/
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
 # 1. Clone the repository
@@ -291,9 +282,9 @@ npm run dev
 
 ---
 
-## ⚙️ Environment Configuration
+## Environment Configuration
 
-Copy `.env.example` to `.env` and fill in your values:
+Copy `Backend/.env.example` to `Backend/.env` and fill in your values. If `SECRET_KEY` is not set, the backend generates a temporary key at startup and logged-in sessions end whenever it restarts.
 
 ```env
 # ── Application ──────────────────────────────────
@@ -313,14 +304,17 @@ GOOGLE_API_KEY=your-api-key-here
 # ── JWT Security ─────────────────────────────────
 # Generate: python -c "import secrets; print(secrets.token_hex(32))"
 SECRET_KEY=replace-with-64-char-random-hex
-SESSION_SECRET_KEY=replace-with-another-64-char-random-hex
+
+# ── Optional: SELECT-only role for the AI assistant ──
+# READONLY_DATABASE_URL=postgresql+psycopg2://ai_readonly:password@localhost:5432/postgres
+# AI_SQL_TIMEOUT_MS=10000
 ```
 
 > ⚠️ `.env` is in `.gitignore` and must never be committed. Only `.env.example` belongs in source control.
 
 ---
 
-## 🗄 Database Setup
+## Database Setup
 
 Tables, indexes, and ENUM types are created automatically on first server startup — no manual migration required.
 
@@ -332,7 +326,7 @@ To inspect the schema, constraints, and seat pool logic in detail: [`DATABASE_SC
 
 ---
 
-## 📦 Loading Sample Data
+## Loading Sample Data
 
 ### Option A — Python seeder `(5 courses · 20 students)`
 
@@ -363,7 +357,7 @@ Source files: `Backend/data/courses.csv` · `Backend/data/students.csv`
 
 ---
 
-## ⚙️ Running Allocation Engine
+## Running Allocation Engine
 
 **Via the UI:** Navigate to the **Allocation** page → click **Run Allocation**
 
@@ -393,7 +387,7 @@ curl -s -X POST http://localhost:8000/allocation/process \
 
 ---
 
-## 📖 API Reference
+## API Reference
 
 Interactive docs: **http://localhost:8000/docs** (Swagger UI)  
 Alternative: **http://localhost:8000/redoc**  
@@ -431,20 +425,22 @@ Full reference: [`API_DOCUMENTATION.md`](API_DOCUMENTATION.md)
 
 ---
 
-## 🔑 Default Credentials
+## Development Credentials
+
+**For local development only.** `seed_data.py` and `import_csv.py` create this admin account so you can log in after seeding. It is not a real user and the login page only shows it in development builds (`npm run dev`).
 
 | Role | Email | Password |
 |---|---|---|
 | Admin | `admin@courseflow.com` | `admin123` |
 
-> **Security note:** Change this password immediately on any shared or public deployment.
+Never seed a shared or public database with this account. If you already have, change the password from User Management straight away.
 
 ---
 
-## 🚢 Production Checklist
+## Production Checklist
 
 **Security**
-- [ ] Rotate `SECRET_KEY` and `SESSION_SECRET_KEY` — use `secrets.token_hex(32)`
+- [ ] Set your own `SECRET_KEY` — generate one with `secrets.token_hex(32)`
 - [ ] Restrict `allow_origins` in CORS middleware to your frontend domain
 - [ ] Disable Swagger UI — remove or guard `/docs` and `/redoc` in production
 - [ ] Rotate and IP-restrict `GOOGLE_API_KEY` in Google Cloud Console
@@ -460,23 +456,46 @@ Full reference: [`API_DOCUMENTATION.md`](API_DOCUMENTATION.md)
 
 **Frontend**
 - [ ] Run `npm run build` and serve `dist/` as static files
-- [ ] Set `VITE_API_BASE_URL` to your production API domain
+- [ ] Proxy `/api` to the backend in your web server (the Vite dev proxy only works in development)
 - [ ] Configure a CDN with caching headers for static assets
 
 ---
 
-## ⚠️ Known Limitations
+## Read-only SQL
+
+The AI assistant writes SQL from a user's question, so `Backend/services/sql_guard.py` treats it as untrusted. Any one of these layers stops a write:
+
+1. **Static check.** One `SELECT` or `WITH` statement only; no write keywords; no access to the `users` table or password hashes.
+2. **Read-only transaction.** The query runs after `SET TRANSACTION READ ONLY` with a statement timeout, and the transaction is always rolled back. PostgreSQL then refuses writes, including data-modifying CTEs, `SELECT ... INTO` and `nextval()`.
+3. **Read-only role (optional).** Create it with [`docs/readonly_role.sql`](./docs/readonly_role.sql) and set `READONLY_DATABASE_URL`. It can read the allocation tables only, not `users` or `ai_chat_history`.
+
+The `/ai/chat` and `/ai/chat/history` endpoints require a logged-in user.
+
+### Tests
+
+```bash
+pip install pytest
+cd Backend
+pytest tests                                   # static checks only
+TEST_DATABASE_URL=postgresql+psycopg2://postgres@localhost:5432/test pytest tests   # adds database tests
+```
+
+The database tests need a disposable PostgreSQL database; they create and drop a table called `t_sales`.
+
+---
+
+## Known Limitations
 
 - Allocation does not implement a waitlist — outcome is binary: **Allocated** or **Not Allocated**
 - No email / SMS notification on allocation result
-- AI assistant is strictly read-only — it executes `SELECT` queries only
+- The AI assistant can only read data: see [Read-only SQL](#read-only-sql)
 - JWT tokens cannot be individually revoked before expiry (no token blacklist / blocklist)
 - No automated database migration tooling (Alembic) — schema changes require manual intervention
 - Single-region deployment only — no multi-region support
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch — `git checkout -b feature/your-feature`
@@ -488,14 +507,6 @@ Please follow [Conventional Commits](https://www.conventionalcommits.org/) for c
 
 ---
 
-## 📄 License
+## License
 
-This project is licensed under the [MIT License](LICENSE).
-
----
-
-<div align="center">
-
-Built with ❤️ by **Anand** · [GitHub](https://github.com/anandmadhapan)
-
-</div>
+MIT. See [LICENSE](LICENSE).
