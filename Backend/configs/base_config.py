@@ -1,8 +1,11 @@
 import os
+import secrets
 
 
 class BaseConfig(object):
-    SECRET_KEY: str = os.getenv('SECRET_KEY', '691a03c2f0a7a449a00a394ca9deca08a3c4602f0995d8376bc60884c184c991')
+    # No hardcoded fallback: a key committed to a public repo can be used to forge tokens.
+    # Without SECRET_KEY set, a random key is generated per process (sessions reset on restart).
+    SECRET_KEY: str = os.getenv('SECRET_KEY') or secrets.token_hex(32)
     ALGORITHM: str = 'HS256'
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
